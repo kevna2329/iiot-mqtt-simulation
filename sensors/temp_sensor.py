@@ -4,6 +4,8 @@ import random
 import json
 import argparse
 import sys
+import math
+import hashlib
 
 
 def parse_argumentos():
@@ -15,6 +17,15 @@ def parse_argumentos():
     parser.add_argument("--qos", type=int, choices=[0, 1, 2], default=1)
     parser.add_argument("--intervalo", type=float, default=2.0)
     parser.add_argument("--limiar-alerta", type=float, default=80.0)
+    # --- Novos parâmetros (item 3): controle do padrão senoidal de temperatura ---
+    parser.add_argument("--temp-base", type=float, default=70.0,
+                         help="Temperatura média em torno da qual o sensor oscila (°C)")
+    parser.add_argument("--amplitude", type=float, default=20.0,
+                         help="Amplitude da oscilação senoidal (°C). temp_base +- amplitude")
+    parser.add_argument("--periodo-ciclo", type=float, default=40.0,
+                         help="Duração (em segundos) de um ciclo completo de oscilação")
+    parser.add_argument("--ruido", type=float, default=1.5,
+                         help="Amplitude máxima do ruído aleatório somado à leitura (°C)")
     return parser.parse_args()
 
 
@@ -28,8 +39,25 @@ QOS = ARGS.qos
 INTERVALO_ENVIO = ARGS.intervalo
 LIMIAR_ALERTA = ARGS.limiar_alerta
 
-TEMP_MINIMA = 60.0
-TEMP_MAXIMA = 95.0
+TEMP_BASE = ARGS.temp_base
+AMPLITUDE = ARGS.amplitude
+PERIODO_CICLO = ARGS.periodo_ciclo
+RUIDO_MAX = ARGS.ruido
+
+# Limites absolutos de segurança (clamp), evita valores irreais mesmo com ruído
+TEMP_MINIMA_ABS = 40.0
+TEMP_MAXIMA_ABS = 100.0
+
+# --- Item 4: desincronização entre sensores ---
+# Cada sensor calcula uma fase própria (offset em segundos) a partir do hash do
+# seu sensor_id. Isso garante que, ao rodar vários sensores em paralelo, eles
+# NÃO ultrapassem o limiar de 80°C todos ao mesmo tempo — os alertas aparecem
+# de forma escalonada, o que fica mais realista e mais fácil de acompanhar
+# no monitor e na captura do Wireshark.
+_hash_sensor = int(hashlib.md5(SENSOR_ID.encode()).hexdigest(), 16)
+FASE_OFFSET = (_hash_sensor % 1000) / 1000.0 * PERIODO_CICLO
+
+TEMPO_INICIO = time.time()
 
 
 def on_connect(client, userdata, flags, reason_code, properties=None):
@@ -44,10 +72,23 @@ def on_disconnect(client, userdata, *args):
 
 
 def gerar_leitura_temperatura():
-    if random.random() < 0.15:
-        temperatura = round(random.uniform(LIMIAR_ALERTA, TEMP_MAXIMA), 2)
-    else:
-        temperatura = round(random.uniform(TEMP_MINIMA, LIMIAR_ALERTA - 0.1), 2)
+    """
+    Gera uma leitura de temperatura seguindo um padrão senoidal + ruído.
+
+    Em vez de um sorteio puramente aleatório (que pode levar muito tempo até
+    gerar um valor acima do limiar de alerta), a temperatura oscila de forma
+    previsível ao longo do tempo, garantindo que o limiar de 80°C seja
+    ultrapassado periodicamente — o que é essencial para demonstrar, de forma
+    confiável, a lógica de alerta do monitor (Pessoa 2) durante a gravação do
+    vídeo e a captura no Wireshark.
+    """
+    tempo_decorrido = time.time() - TEMPO_INICIO
+    ciclo = math.sin(2 * math.pi * (tempo_decorrido + FASE_OFFSET) / PERIODO_CICLO)
+    ruido = random.uniform(-RUIDO_MAX, RUIDO_MAX)
+
+    temperatura = TEMP_BASE + (AMPLITUDE * ciclo) + ruido
+    temperatura = max(TEMP_MINIMA_ABS, min(TEMP_MAXIMA_ABS, temperatura))
+    temperatura = round(temperatura, 2)
 
     leitura = {
         "sensor_id": SENSOR_ID,
@@ -56,6 +97,10 @@ def gerar_leitura_temperatura():
         "unidade": "C",
         "timestamp": time.strftime("%Y-%m-%d %H:%M:%S")
     }
+
+    if temperatura >= LIMIAR_ALERTA:
+        print(f"[{SENSOR_ID}] >>> Leitura acima do limiar de alerta ({LIMIAR_ALERTA}°C): {temperatura}°C")
+
     return leitura
 
 
@@ -69,6 +114,8 @@ def main():
     client.on_disconnect = on_disconnect
 
     print(f"[{SENSOR_ID}] Conectando ao broker {BROKER_ENDERECO}:{BROKER_PORTA}...")
+    print(f"[{SENSOR_ID}] Padrão de temperatura: base={TEMP_BASE}°C, amplitude={AMPLITUDE}°C, "
+          f"período={PERIODO_CICLO}s, fase={FASE_OFFSET:.1f}s")
     try:
         client.connect(BROKER_ENDERECO, BROKER_PORTA, keepalive=60)
     except (ConnectionRefusedError, TimeoutError, OSError) as erro:
