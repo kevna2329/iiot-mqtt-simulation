@@ -67,11 +67,17 @@ fabrica/<identificador_da_maquina>/<tipo_de_grandeza>
 ```
 Exemplo: fabrica/maquina01/temperatura
 
-## 4. Scripts Publicadores (Sensores)
+## 4. Dados salvos
 
-- temp_sensor.py — temperatura (°C), alerta acima de 80
-- vibration_sensor.py — vibração (Hz), alerta acima de 18
-- pressure_sensor.py — pressão (PSI), alerta acima de 150
+Cada sensor grava, a cada leitura, uma linha em resultados/<cenario>/<sensor_id>.csv.
+Ao final da execução via iniciar_sensor.py, é gerado resultados/<cenario>/resumo.json, consolidando todos os sensores daquele cenário: parâmetros usados, totais (leituras, sucesso, falha, alertas) e latência média/máxima — geral e por sensor.
+### Cenários já testados
+
+| Cenário | Configuração | Sensores | Leituras | Falhas | Alertas | % Alerta | Latência média |
+| :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
+| **cenario_normal** | `temperatura: 2, vibracao: 1, pressao: 1, 60s` | 4 | — | 0 | — | — | — |
+| **cenario_estresse** | `temperatura: 3, vibracao: 3, pressao: 3, intervalo 1s` | 9 | 565 | 0 | 63 | ~11% | 0.77ms |
+| **scenario_alerta** | Bases forçadas acima do limiar (`--temp-base 90` etc.) | 9 (misto) | 98 | 0 | 74 | ~75,5% | 0.80ms |
 
 ## 5. Orquestrador de Múltiplos Sensores
 
