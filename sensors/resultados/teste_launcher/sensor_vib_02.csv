@@ -1,0 +1,12 @@
+timestamp,sensor_id,tipo,valor,unidade,qos,latencia_ms,status,alerta
+2026-08-18 20:01:38,sensor_vib_02,vibracao,15.66,Hz,1,0.47,ok,False
+2026-08-18 20:01:40,sensor_vib_02,vibracao,16.53,Hz,1,0.89,ok,False
+2026-08-18 20:01:42,sensor_vib_02,vibracao,15.08,Hz,1,0.97,ok,False
+2026-08-18 20:01:44,sensor_vib_02,vibracao,15.11,Hz,1,0.93,ok,False
+2026-08-18 20:01:46,sensor_vib_02,vibracao,12.58,Hz,1,0.98,ok,False
+2026-08-18 20:01:48,sensor_vib_02,vibracao,11.45,Hz,1,0.99,ok,False
+2026-08-18 20:01:50,sensor_vib_02,vibracao,7.96,Hz,1,0.91,ok,False
+2026-08-18 20:01:52,sensor_vib_02,vibracao,5.58,Hz,1,0.92,ok,False
+2026-08-18 20:01:54,sensor_vib_02,vibracao,3.41,Hz,1,0.61,ok,False
+2026-08-18 20:01:56,sensor_vib_02,vibracao,2.38,Hz,1,0.41,ok,False
+2026-08-18 20:01:58,sensor_vib_02,vibracao,1.02,Hz,1,0.88,ok,False
