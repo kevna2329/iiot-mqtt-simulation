@@ -1,0 +1,121 @@
+{
+  "cenario": "cenario_estresse",
+  "parametros": {
+    "broker": "localhost",
+    "porta": 1883,
+    "qos": 1,
+    "intervalo": 1.0,
+    "periodo_ciclo": 40.0,
+    "duracao": 60.0
+  },
+  "totais": {
+    "sensores": 9,
+    "leituras": 565,
+    "envios_ok": 565,
+    "envios_falha": 0,
+    "alertas_disparados": 64,
+    "latencia_media_ms": 0.73,
+    "latencia_maxima_ms": 5.49
+  },
+  "sensores": [
+    {
+      "sensor_id": "sensor_temp_01",
+      "tipo": "temperatura",
+      "topico": "fabrica/maquina01/temperatura",
+      "total_leituras": 65,
+      "envios_ok": 65,
+      "envios_falha": 0,
+      "alertas_disparados": 25,
+      "latencia_media_ms": 0.78,
+      "latencia_maxima_ms": 1.19
+    },
+    {
+      "sensor_id": "sensor_temp_02",
+      "tipo": "temperatura",
+      "topico": "fabrica/maquina02/temperatura",
+      "total_leituras": 64,
+      "envios_ok": 64,
+      "envios_falha": 0,
+      "alertas_disparados": 16,
+      "latencia_media_ms": 0.78,
+      "latencia_maxima_ms": 1.29
+    },
+    {
+      "sensor_id": "sensor_temp_03",
+      "tipo": "temperatura",
+      "topico": "fabrica/maquina03/temperatura",
+      "total_leituras": 64,
+      "envios_ok": 64,
+      "envios_falha": 0,
+      "alertas_disparados": 23,
+      "latencia_media_ms": 0.81,
+      "latencia_maxima_ms": 1.38
+    },
+    {
+      "sensor_id": "sensor_vib_04",
+      "tipo": "vibracao",
+      "topico": "fabrica/maquina04/vibracao",
+      "total_leituras": 63,
+      "envios_ok": 63,
+      "envios_falha": 0,
+      "alertas_disparados": 0,
+      "latencia_media_ms": 0.77,
+      "latencia_maxima_ms": 1.42
+    },
+    {
+      "sensor_id": "sensor_vib_05",
+      "tipo": "vibracao",
+      "topico": "fabrica/maquina05/vibracao",
+      "total_leituras": 63,
+      "envios_ok": 63,
+      "envios_falha": 0,
+      "alertas_disparados": 0,
+      "latencia_media_ms": 0.72,
+      "latencia_maxima_ms": 1.17
+    },
+    {
+      "sensor_id": "sensor_vib_06",
+      "tipo": "vibracao",
+      "topico": "fabrica/maquina06/vibracao",
+      "total_leituras": 62,
+      "envios_ok": 62,
+      "envios_falha": 0,
+      "alertas_disparados": 0,
+      "latencia_media_ms": 0.65,
+      "latencia_maxima_ms": 1.17
+    },
+    {
+      "sensor_id": "sensor_press_07",
+      "tipo": "pressao",
+      "topico": "fabrica/maquina07/pressao",
+      "total_leituras": 62,
+      "envios_ok": 62,
+      "envios_falha": 0,
+      "alertas_disparados": 0,
+      "latencia_media_ms": 0.75,
+      "latencia_maxima_ms": 1.3
+    },
+    {
+      "sensor_id": "sensor_press_08",
+      "tipo": "pressao",
+      "topico": "fabrica/maquina08/pressao",
+      "total_leituras": 61,
+      "envios_ok": 61,
+      "envios_falha": 0,
+      "alertas_disparados": 0,
+      "latencia_media_ms": 0.64,
+      "latencia_maxima_ms": 1.23
+    },
+    {
+      "sensor_id": "sensor_press_09",
+      "tipo": "pressao",
+      "topico": "fabrica/maquina09/pressao",
+      "total_leituras": 61,
+      "envios_ok": 61,
+      "envios_falha": 0,
+      "alertas_disparados": 0,
+      "latencia_media_ms": 0.71,
+      "latencia_maxima_ms": 5.49
+    }
+  ]
+}

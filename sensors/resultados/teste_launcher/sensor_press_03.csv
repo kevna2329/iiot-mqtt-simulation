@@ -1,0 +1,12 @@
+timestamp,sensor_id,tipo,valor,unidade,qos,latencia_ms,status,alerta
+2026-08-18 20:01:39,sensor_press_03,pressao,85.67,PSI,1,0.47,ok,False
+2026-08-18 20:01:41,sensor_press_03,pressao,100.14,PSI,1,0.56,ok,False
+2026-08-18 20:01:43,sensor_press_03,pressao,113.24,PSI,1,0.92,ok,False
+2026-08-18 20:01:45,sensor_press_03,pressao,126.65,PSI,1,0.89,ok,False
+2026-08-18 20:01:47,sensor_press_03,pressao,130.51,PSI,1,0.95,ok,False
+2026-08-18 20:01:49,sensor_press_03,pressao,138.91,PSI,1,0.94,ok,False
+2026-08-18 20:01:51,sensor_press_03,pressao,141.53,PSI,1,0.94,ok,False
+2026-08-18 20:01:53,sensor_press_03,pressao,135.04,PSI,1,0.83,ok,False
+2026-08-18 20:01:55,sensor_press_03,pressao,132.45,PSI,1,0.98,ok,False
+2026-08-18 20:01:57,sensor_press_03,pressao,125.13,PSI,1,0.61,ok,False
+2026-08-18 20:01:59,sensor_press_03,pressao,113.78,PSI,1,0.8,ok,False

@@ -1,0 +1,91 @@
+{
+  "cenario": "cenario_alerta",
+  "parametros": {
+    "broker": "localhost",
+    "porta": 1883,
+    "qos": 1,
+    "intervalo": 2.0,
+    "periodo_ciclo": 40.0,
+    "duracao": 30.0,
+    "temp_base_forcado": 90.0,
+    "freq_base_forcado": 25.0,
+    "pressao_base_forcado": 180.0
+  },
+  "totais": {
+    "sensores": 6,
+    "leituras": 98,
+    "envios_ok": 98,
+    "envios_falha": 0,
+    "alertas_disparados": 74,
+    "latencia_media_ms": 0.8,
+    "latencia_maxima_ms": 1.12
+  },
+  "sensores": [
+    {
+      "sensor_id": "sensor_temp_01",
+      "tipo": "temperatura",
+      "topico": "fabrica/maquina01/temperatura",
+      "total_leituras": 17,
+      "envios_ok": 17,
+      "envios_falha": 0,
+      "alertas_disparados": 13,
+      "latencia_media_ms": 0.79,
+      "latencia_maxima_ms": 1.02
+    },
+    {
+      "sensor_id": "sensor_temp_02",
+      "tipo": "temperatura",
+      "topico": "fabrica/maquina02/temperatura",
+      "total_leituras": 17,
+      "envios_ok": 17,
+      "envios_falha": 0,
+      "alertas_disparados": 10,
+      "latencia_media_ms": 0.8,
+      "latencia_maxima_ms": 1.06
+    },
+    {
+      "sensor_id": "sensor_vib_03",
+      "tipo": "vibracao",
+      "topico": "fabrica/maquina03/vibracao",
+      "total_leituras": 16,
+      "envios_ok": 16,
+      "envios_falha": 0,
+      "alertas_disparados": 12,
+      "latencia_media_ms": 0.9,
+      "latencia_maxima_ms": 1.12
+    },
+    {
+      "sensor_id": "sensor_vib_04",
+      "tipo": "vibracao",
+      "topico": "fabrica/maquina04/vibracao",
+      "total_leituras": 16,
+      "envios_ok": 16,
+      "envios_falha": 0,
+      "alertas_disparados": 12,
+      "latencia_media_ms": 0.85,
+      "latencia_maxima_ms": 1.1
+    },
+    {
+      "sensor_id": "sensor_press_05",
+      "tipo": "pressao",
+      "topico": "fabrica/maquina05/pressao",
+      "total_leituras": 16,
+      "envios_ok": 16,
+      "envios_falha": 0,
+      "alertas_disparados": 16,
+      "latencia_media_ms": 0.85,
+      "latencia_maxima_ms": 1.05
+    },
+    {
+      "sensor_id": "sensor_press_06",
+      "tipo": "pressao",
+      "topico": "fabrica/maquina06/pressao",
+      "total_leituras": 16,
+      "envios_ok": 16,
+      "envios_falha": 0,
+      "alertas_disparados": 11,
+      "latencia_media_ms": 0.58,
+      "latencia_maxima_ms": 1.11
+    }
+  ]
+}
