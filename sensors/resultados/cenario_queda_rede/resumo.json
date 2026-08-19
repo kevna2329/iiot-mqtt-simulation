@@ -1,0 +1,84 @@
+{
+  "cenario": "teste_queda_rede",
+  "tipo_cenario": "falha_de_rede",
+  "parametros": {
+    "broker": "localhost",
+    "porta": 1884,
+    "qos": 1,
+    "intervalo": 1.0,
+    "periodo_ciclo": 40.0,
+    "duracao": 90.0,
+    "temp_base_forcado": null,
+    "freq_base_forcado": null,
+    "pressao_base_forcado": null,
+    "reconexao_min_s": 1.0,
+    "reconexao_max_s": 30.0
+  },
+  "totais": {
+    "sensores": 3,
+    "leituras": 279,
+    "envios_ok": 258,
+    "envios_falha": 0,
+    "leituras_sem_conexao": 21,
+    "alertas_disparados": 63,
+    "desconexoes_inesperadas": 3,
+    "latencia_media_ms": 1.26,
+    "latencia_maxima_ms": 26.78
+  },
+  "sensores": [
+    {
+      "sensor_id": "sensor_temp_01",
+      "tipo": "temperatura",
+      "topico": "fabrica/maquina01/temperatura",
+      "total_leituras": 94,
+      "envios_ok": 87,
+      "envios_falha": 0,
+      "leituras_sem_conexao": 7,
+      "alertas_disparados": 23,
+      "latencia_media_ms": 1.34,
+      "latencia_maxima_ms": 26.78,
+      "conexao": {
+        "total_conexoes": 3,
+        "total_desconexoes": 1,
+        "desconexoes_inesperadas": 1,
+        "tempo_max_recuperacao_s": 7.0
+      }
+    },
+    {
+      "sensor_id": "sensor_temp_02",
+      "tipo": "temperatura",
+      "topico": "fabrica/maquina02/temperatura",
+      "total_leituras": 93,
+      "envios_ok": 86,
+      "envios_falha": 0,
+      "leituras_sem_conexao": 7,
+      "alertas_disparados": 20,
+      "latencia_media_ms": 1.28,
+      "latencia_maxima_ms": 12.53,
+      "conexao": {
+        "total_conexoes": 3,
+        "total_desconexoes": 1,
+        "desconexoes_inesperadas": 1,
+        "tempo_max_recuperacao_s": 7.0
+      }
+    },
+    {
+      "sensor_id": "sensor_temp_03",
+      "tipo": "temperatura",
+      "topico": "fabrica/maquina03/temperatura",
+      "total_leituras": 92,
+      "envios_ok": 85,
+      "envios_falha": 0,
+      "leituras_sem_conexao": 7,
+      "alertas_disparados": 20,
+      "latencia_media_ms": 1.16,
+      "latencia_maxima_ms": 9.42,
+      "conexao": {
+        "total_conexoes": 3,
+        "total_desconexoes": 1,
+        "desconexoes_inesperadas": 1,
+        "tempo_max_recuperacao_s": 7.0
+      }
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+timestamp,sensor_id,evento,reason_code,detalhe
+2026-08-18 22:18:18,sensor_vib_02,connect,Success,
+2026-08-18 22:18:41,sensor_vib_02,disconnect,Unspecified error,desconexao_inesperada
+2026-08-18 22:18:50,sensor_vib_02,connect,Success,

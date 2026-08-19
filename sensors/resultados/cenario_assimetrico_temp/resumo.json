@@ -1,0 +1,71 @@
+{
+  "cenario": "cenario_assimetrico_temp",
+  "tipo_cenario": "regenerado_a_partir_de_csv",
+  "totais": {
+    "sensores": 3,
+    "leituras": 179,
+    "envios_ok": 167,
+    "envios_falha": 0,
+    "leituras_sem_conexao": 12,
+    "alertas_disparados": 26,
+    "desconexoes_inesperadas": 1,
+    "latencia_media_ms": 1.74,
+    "latencia_maxima_ms": 22.75
+  },
+  "sensores": [
+    {
+      "sensor_id": "sensor_press_03",
+      "tipo": "pressao",
+      "topico": null,
+      "total_leituras": 53,
+      "envios_ok": 53,
+      "envios_falha": 0,
+      "leituras_sem_conexao": 0,
+      "alertas_disparados": 0,
+      "latencia_media_ms": 1.52,
+      "latencia_maxima_ms": 7.04,
+      "conexao": {
+        "total_conexoes": 1,
+        "total_desconexoes": 0,
+        "desconexoes_inesperadas": 0,
+        "tempo_max_recuperacao_s": null
+      }
+    },
+    {
+      "sensor_id": "sensor_temp_01",
+      "tipo": "temperatura",
+      "topico": null,
+      "total_leituras": 66,
+      "envios_ok": 55,
+      "envios_falha": 0,
+      "leituras_sem_conexao": 11,
+      "alertas_disparados": 26,
+      "latencia_media_ms": 1.78,
+      "latencia_maxima_ms": 14.9,
+      "conexao": {
+        "total_conexoes": 2,
+        "total_desconexoes": 1,
+        "desconexoes_inesperadas": 1,
+        "tempo_max_recuperacao_s": 10.0
+      }
+    },
+    {
+      "sensor_id": "sensor_vib_02",
+      "tipo": "vibracao",
+      "topico": null,
+      "total_leituras": 60,
+      "envios_ok": 59,
+      "envios_falha": 0,
+      "leituras_sem_conexao": 1,
+      "alertas_disparados": 0,
+      "latencia_media_ms": 1.89,
+      "latencia_maxima_ms": 22.75,
+      "conexao": {
+        "total_conexoes": 1,
+        "total_desconexoes": 0,
+        "desconexoes_inesperadas": 0,
+        "tempo_max_recuperacao_s": null
+      }
+    }
+  ]
+}

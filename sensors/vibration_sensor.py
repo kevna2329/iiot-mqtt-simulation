@@ -29,6 +29,10 @@ def parse_argumentos():
                          help="Amplitude máxima do ruído aleatório somado à leitura (Hz)")
     parser.add_argument("--pasta-saida", default="resultados",
                          help="Pasta onde o CSV com o histórico de leituras/envios será salvo")
+    parser.add_argument("--reconexao-min", type=float, default=1.0,
+                         help="Delay mínimo (s) entre tentativas de reconexão automática")
+    parser.add_argument("--reconexao-max", type=float, default=30.0,
+                         help="Delay máximo (s) entre tentativas de reconexão (backoff exponencial)")
     return parser.parse_args()
 
 
@@ -50,6 +54,8 @@ RUIDO_MAX = ARGS.ruido
 FREQ_MINIMA_ABS = 0.0
 FREQ_MAXIMA_ABS = 40.0
 
+TOPICO_STATUS = TOPICO.rsplit("/", 1)[0] + "/status"
+
 PASTA_SAIDA = ARGS.pasta_saida
 CSV_PATH = os.path.join(PASTA_SAIDA, f"{SENSOR_ID}.csv")
 CSV_CABECALHO = [
@@ -57,21 +63,40 @@ CSV_CABECALHO = [
     "qos", "latencia_ms", "status", "alerta"
 ]
 
+CSV_EVENTOS_PATH = os.path.join(PASTA_SAIDA, f"{SENSOR_ID}_eventos_conexao.csv")
+CSV_EVENTOS_CABECALHO = ["timestamp", "sensor_id", "evento", "reason_code", "detalhe"]
+
 _hash_sensor = int(hashlib.md5(SENSOR_ID.encode()).hexdigest(), 16)
 FASE_OFFSET = (_hash_sensor % 1000) / 1000.0 * PERIODO_CICLO
 
 TEMPO_INICIO = time.time()
 
+_arquivo_eventos = None
+_escritor_eventos = None
+
+
+def registrar_evento(evento, reason_code="", detalhe=""):
+    if _escritor_eventos is None:
+        return
+    timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
+    _escritor_eventos.writerow([timestamp, SENSOR_ID, evento, reason_code, detalhe])
+    _arquivo_eventos.flush()
+
 
 def on_connect(client, userdata, flags, reason_code, properties=None):
     if reason_code == 0:
         print(f"[{SENSOR_ID}] Conectado ao broker com sucesso! (QoS={QOS}, tópico={TOPICO})")
+        client.publish(TOPICO_STATUS, "online", qos=1, retain=True)
+        registrar_evento("connect", reason_code=str(reason_code))
     else:
         print(f"[{SENSOR_ID}] Falha na conexão. Código: {reason_code}")
+        registrar_evento("connect_falha", reason_code=str(reason_code))
 
 
-def on_disconnect(client, userdata, *args):
-    print(f"[{SENSOR_ID}] Desconectado do broker.")
+def on_disconnect(client, userdata, disconnect_flags=None, reason_code=0, properties=None):
+    tipo = "desconexao_limpa" if reason_code == 0 else "desconexao_inesperada"
+    print(f"[{SENSOR_ID}] Desconectado do broker. ({tipo}, reason_code={reason_code})")
+    registrar_evento("disconnect", reason_code=str(reason_code), detalhe=tipo)
 
 
 def inicializar_csv():
@@ -85,8 +110,18 @@ def inicializar_csv():
     return arquivo, escritor
 
 
-def gerar_leitura_vibracao():
+def inicializar_csv_eventos():
+    global _arquivo_eventos, _escritor_eventos
+    os.makedirs(PASTA_SAIDA, exist_ok=True)
+    arquivo_novo = not os.path.exists(CSV_EVENTOS_PATH)
+    _arquivo_eventos = open(CSV_EVENTOS_PATH, "a", newline="", encoding="utf-8")
+    _escritor_eventos = csv.writer(_arquivo_eventos)
+    if arquivo_novo:
+        _escritor_eventos.writerow(CSV_EVENTOS_CABECALHO)
+        _arquivo_eventos.flush()
 
+
+def gerar_leitura_vibracao():
     tempo_decorrido = time.time() - TEMPO_INICIO
     ciclo = math.sin(2 * math.pi * (tempo_decorrido + FASE_OFFSET) / PERIODO_CICLO)
     ruido = random.uniform(-RUIDO_MAX, RUIDO_MAX)
@@ -118,9 +153,16 @@ def main():
     client.on_connect = on_connect
     client.on_disconnect = on_disconnect
 
+    client.reconnect_delay_set(min_delay=int(ARGS.reconexao_min), max_delay=int(ARGS.reconexao_max))
+    client.will_set(TOPICO_STATUS, payload="offline", qos=1, retain=True)
+
+    inicializar_csv_eventos()
+
     print(f"[{SENSOR_ID}] Conectando ao broker {BROKER_ENDERECO}:{BROKER_PORTA}...")
     print(f"[{SENSOR_ID}] Padrão de vibração: base={FREQ_BASE}Hz, amplitude={AMPLITUDE}Hz, "
           f"período={PERIODO_CICLO}s, fase={FASE_OFFSET:.1f}s")
+    print(f"[{SENSOR_ID}] LWT configurado em '{TOPICO_STATUS}' (offline), "
+          f"reconexão automática entre {ARGS.reconexao_min}s e {ARGS.reconexao_max}s")
     try:
         client.connect(BROKER_ENDERECO, BROKER_PORTA, keepalive=60)
     except (ConnectionRefusedError, TimeoutError, OSError) as erro:
@@ -132,9 +174,20 @@ def main():
 
     arquivo_csv, escritor_csv = inicializar_csv()
     print(f"[{SENSOR_ID}] Histórico de leituras/envios sendo salvo em: {CSV_PATH}")
+    print(f"[{SENSOR_ID}] Histórico de eventos de conexão sendo salvo em: {CSV_EVENTOS_PATH}")
 
     try:
         while True:
+            if not client.is_connected():
+                print(f"[{SENSOR_ID}] Sem conexão no momento — leitura não enviada (aguardando reconexão automática)")
+                escritor_csv.writerow([
+                    time.strftime("%Y-%m-%d %H:%M:%S"), SENSOR_ID, "vibracao", "",
+                    "Hz", QOS, "", "sem_conexao", False
+                ])
+                arquivo_csv.flush()
+                time.sleep(INTERVALO_ENVIO)
+                continue
+
             leitura = gerar_leitura_vibracao()
             payload = json.dumps(leitura)
 
@@ -168,6 +221,10 @@ def main():
         print(f"\n[{SENSOR_ID}] Encerrando sensor...")
     finally:
         arquivo_csv.close()
+        if _arquivo_eventos:
+            _arquivo_eventos.close()
+        client.publish(TOPICO_STATUS, "offline", qos=1, retain=True)
+        time.sleep(0.3)
         client.loop_stop()
         client.disconnect()
 
