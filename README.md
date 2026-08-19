@@ -24,11 +24,11 @@ python -m pip install -r requirements.txt
 3. Acesse a pasta dos sensores e execute um sensor individual:
 ```bash
 cd sensors
-python temp_sensor.py sensor_temp_01
+python temp_sensor.py sensor_temp_01 
 ```
 4. Ou execute múltiplos sensores simultaneamente:
 ```bash
-python iniciar_sensor.py --tipos temperatura:2,vibracao:1,pressao:1
+python iniciar_sensor.py --tipos temperatura:2,vibracao:1,pressao:1 --cenario cenario_normal --duracao 60
 ```
 
 ## 2. Padronização do Payload
@@ -67,15 +67,15 @@ fabrica/<identificador_da_maquina>/<tipo_de_grandeza>
 ```
 Exemplo: fabrica/maquina01/temperatura
 
-## 4. Scripts Publicadores (Sensores)
+## 4. Dados salvos
 
-- temp_sensor.py — temperatura (°C), alerta acima de 80
-- vibration_sensor.py — vibração (Hz), alerta acima de 18
-- pressure_sensor.py — pressão (PSI), alerta acima de 150
+Cada sensor grava, a cada leitura, uma linha em resultados/<cenario>/<sensor_id>.csv.
+Ao final da execução via iniciar_sensor.py, é gerado resultados/<cenario>/resumo.json, consolidando todos os sensores daquele cenário: parâmetros usados, totais (leituras, sucesso, falha, alertas) e latência média/máxima — geral e por sensor.
 
-## 5. Orquestrador de Múltiplos Sensores
+### Cenários já testados
 
-iniciar_sensor.py sobe várias instâncias dos sensores simultaneamente:
-```bash
-python iniciar_sensor.py --tipos temperatura,vibracao,pressao --n-sensores 2
-```
+| Cenário | Configuração | Sensores | Leituras | Falhas | Alertas | % Alerta | Latência média |
+| :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
+| **cenario_normal** | `temperatura: 2, vibracao: 1, pressao: 1, 60s` | 4 | 124 | 0 | 18 | ~14% | 0.77ms |
+| **cenario_estresse** | `temperatura: 3, vibracao: 3, pressao: 3, intervalo 1s` | 9 | 565 | 0 | 63 | ~11% | 0.77ms |
+| **scenario_alerta** | Bases forçadas acima do limiar (`--temp-base 90` etc.) | 9 (misto) | 98 | 0 | 74 | ~75,5% | 0.80ms |
