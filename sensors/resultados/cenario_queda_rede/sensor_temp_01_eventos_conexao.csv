@@ -1,0 +1,5 @@
+timestamp,sensor_id,evento,reason_code,detalhe
+2026-08-18 21:45:54,sensor_temp_01,connect,Success,
+2026-08-18 21:48:35,sensor_temp_01,connect,Success,
+2026-08-18 21:48:56,sensor_temp_01,disconnect,Unspecified error,desconexao_inesperada
+2026-08-18 21:49:03,sensor_temp_01,connect,Success,
