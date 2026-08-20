@@ -116,4 +116,44 @@ E para gráficos comparativos entre cenários :
 ```bash
 python graphic_cenarios.py --grupo carga     # normal vs estresse vs alerta
 python graphic_cenarios.py --grupo falhas    # 3 assimétricos vs queda de rede
-python graphic_cenarios.py --grupo todos     # todos os cenários de uma vez```
+python graphic_cenarios.py --grupo todos     # todos os cenários de uma vez
+```
+
+## 7. Painel de Monitoramento (Dashboard)
+
+Além dos gráficos estáticos gerados por cenário, o projeto conta com um painel de monitoramento interativo, construído com Streamlit, que lê diretamente os dados salvos em "resultados" e os exibe em formato de painel de rede (estilo NOC — Network Operations Center), tanto para análise de cenários já executados quanto para acompanhamento ao vivo enquanto os sensores estão rodando.
+
+### Como executar
+
+Instale as dependências:
+```bash
+pip install streamlit pandas plotly
+```
+
+Execute, a partir da raiz do projeto:
+```bash
+streamlit run dashboard.py
+```
+
+O painel abre automaticamente no navegador. Na barra lateral, selecione o cenário desejado (qualquer subpasta existente em resultados).
+
+### Modo ao vivo
+
+O dashboard não simula dados por conta própria, ele apenas relê os arquivos CSV gerados pelos sensores, que são gravados linha a linha (`flush()`) a cada leitura. Isso significa que o mesmo painel funciona tanto para:
+
+- **Replay:** analisar um cenário já finalizado, navegando pelos dados salvos.
+- **Ao vivo:** acompanhar um cenário em execução em tempo real, bastando manter o toggle "Modo ao vivo" ativado na barra lateral enquanto `iniciar_sensor.py` está rodando em outro terminal. O painel se atualiza automaticamente no intervalo configurado (1 a 15 segundos).
+
+### O que o painel exibe
+
+**Status geral do sistema:** um indicador no topo mostra, de forma imediata, se todos os sensores estão operacionais, se há degradação parcial (alguns sensores offline) ou se há uma queda total de rede, sem precisar interpretar gráficos.
+
+**Status por sensor:** cada sensor é exibido com indicador online/offline, tempo desde a última desconexão (quando aplicável), última leitura registrada e percentual de uptime (tempo em que o sensor esteve efetivamente conectado dentro da janela observada no cenário).
+
+**Console de eventos:** um log em tempo real, no estilo terminal, mostrando cronologicamente os eventos de `CONNECT`, `DISCONNECT` (com o motivo, diferenciando desconexão limpa de inesperada) e alertas disparados permitindo acompanhar a sequência exata de falha e recuperação de cada sensor.
+
+**Leituras recentes:** gráfico de série temporal com os últimos 2 minutos de leituras da grandeza selecionada, com a linha de limiar de alerta destacada.
+
+**Histórico de incidentes:** tabela consolidando cada período de desconexão inesperada por sensor, com horário de início, horário de recuperação e duração, a mesma lógica de cálculo de tempo de recuperação usada em `iniciar_sensor.py`, aplicada de forma visual.
+
+**Consistência publisher/subscriber:** quando o módulo de monitoramento (monitor/subscriber, desenvolvido pela Pessoa 2) está em execução e salvando seus dados em `resultados/monitor/`, o painel compara o número de leituras publicadas pelos sensores com o número de leituras efetivamente recebidas pelo monitor, evidenciando eventuais perdas de mensagem ou atrasos na entrega.
