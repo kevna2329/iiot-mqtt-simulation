@@ -116,7 +116,8 @@ E para gráficos comparativos entre cenários :
 ```bash
 python graphic_cenarios.py --grupo carga     # normal vs estresse vs alerta
 python graphic_cenarios.py --grupo falhas    # 3 assimétricos vs queda de rede
-python graphic_cenarios.py --grupo todos     # todos os cenários de uma vez```
+python graphic_cenarios.py --grupo todos     # todos os cenários de uma vez
+```
 
 ## 7. Painel de Monitoramento (Dashboard)
 
@@ -145,14 +146,14 @@ O dashboard não simula dados por conta própria, ele apenas relê os arquivos C
 
 ### O que o painel exibe
 
-**Status geral do sistema:** um indicador no topo mostra, de forma imediata, se todos os sensores estão operacionais, se há degradação parcial (alguns sensores offline) ou se há uma queda total de rede — sem precisar interpretar gráficos.
+**Status geral do sistema:** um indicador no topo mostra, de forma imediata, se todos os sensores estão operacionais, se há degradação parcial (alguns sensores offline) ou se há uma queda total de rede, sem precisar interpretar gráficos.
 
 **Status por sensor:** cada sensor é exibido com indicador online/offline, tempo desde a última desconexão (quando aplicável), última leitura registrada e percentual de uptime (tempo em que o sensor esteve efetivamente conectado dentro da janela observada no cenário).
 
-**Console de eventos:** um log em tempo real, no estilo terminal, mostrando cronologicamente os eventos de `CONNECT`, `DISCONNECT` (com o motivo, diferenciando desconexão limpa de inesperada) e alertas disparados — permitindo acompanhar a sequência exata de falha e recuperação de cada sensor.
+**Console de eventos:** um log em tempo real, no estilo terminal, mostrando cronologicamente os eventos de `CONNECT`, `DISCONNECT` (com o motivo, diferenciando desconexão limpa de inesperada) e alertas disparados permitindo acompanhar a sequência exata de falha e recuperação de cada sensor.
 
 **Leituras recentes:** gráfico de série temporal com os últimos 2 minutos de leituras da grandeza selecionada, com a linha de limiar de alerta destacada.
 
-**Histórico de incidentes:** tabela consolidando cada período de desconexão inesperada por sensor, com horário de início, horário de recuperação e duração — a mesma lógica de cálculo de tempo de recuperação usada em `iniciar_sensor.py`, aplicada de forma visual.
+**Histórico de incidentes:** tabela consolidando cada período de desconexão inesperada por sensor, com horário de início, horário de recuperação e duração, a mesma lógica de cálculo de tempo de recuperação usada em `iniciar_sensor.py`, aplicada de forma visual.
 
 **Consistência publisher/subscriber:** quando o módulo de monitoramento (monitor/subscriber, desenvolvido pela Pessoa 2) está em execução e salvando seus dados em `resultados/monitor/`, o painel compara o número de leituras publicadas pelos sensores com o número de leituras efetivamente recebidas pelo monitor, evidenciando eventuais perdas de mensagem ou atrasos na entrega.
