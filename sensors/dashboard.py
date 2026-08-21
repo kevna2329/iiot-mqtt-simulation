@@ -469,6 +469,21 @@ st.divider()
 # Comparação com o monitor (subscriber)
 # --------------------------------------------------------------------------
 
+st.markdown('<div class="section-header">Alertas do monitor (Pessoa 2)</div>', unsafe_allow_html=True)
+
+if alertas_monitor.empty:
+    st.info("Nenhum alerta registrado pelo monitor ainda.")
+else:
+    alertas_exibir = alertas_monitor.sort_values("timestamp_recebido", ascending=False).copy()
+    alertas_exibir["timestamp_recebido"] = alertas_exibir["timestamp_recebido"].dt.strftime("%H:%M:%S")
+    st.dataframe(
+        alertas_exibir[["timestamp_recebido", "sensor_id", "tipo", "valor", "limite", "topico"]],
+        use_container_width=True, hide_index=True,
+    )
+    st.caption(f"Total de alertas disparados pelo monitor: {len(alertas_monitor)}")
+
+st.divider()
+
 st.markdown('<div class="section-header">Consistência publisher / subscriber</div>', unsafe_allow_html=True)
 
 if leituras_monitor.empty:
