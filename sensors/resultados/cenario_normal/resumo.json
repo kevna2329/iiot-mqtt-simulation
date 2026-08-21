@@ -1,66 +1,102 @@
 {
   "cenario": "cenario_normal",
+  "tipo_cenario": "normal",
   "parametros": {
     "broker": "localhost",
     "porta": 1883,
     "qos": 1,
     "intervalo": 2.0,
     "periodo_ciclo": 40.0,
-    "duracao": 60.0
+    "duracao": 60.0,
+    "temp_base_forcado": null,
+    "freq_base_forcado": null,
+    "pressao_base_forcado": null,
+    "reconexao_min_s": 1.0,
+    "reconexao_max_s": 30.0
   },
   "totais": {
     "sensores": 4,
-    "leituras": 124,
-    "envios_ok": 124,
+    "leituras": 492,
+    "envios_ok": 492,
     "envios_falha": 0,
-    "alertas_disparados": 18,
-    "latencia_media_ms": 0.77,
-    "latencia_maxima_ms": 1.16
+    "leituras_sem_conexao": 0,
+    "alertas_disparados": 70,
+    "desconexoes_inesperadas": 0,
+    "latencia_media_ms": 0.91,
+    "latencia_maxima_ms": 15.18
   },
   "sensores": [
     {
       "sensor_id": "sensor_temp_01",
       "tipo": "temperatura",
       "topico": "fabrica/maquina01/temperatura",
-      "total_leituras": 31,
-      "envios_ok": 31,
+      "total_leituras": 124,
+      "envios_ok": 124,
       "envios_falha": 0,
-      "alertas_disparados": 11,
-      "latencia_media_ms": 0.81,
-      "latencia_maxima_ms": 1.11
+      "leituras_sem_conexao": 0,
+      "alertas_disparados": 43,
+      "latencia_media_ms": 0.88,
+      "latencia_maxima_ms": 2.07,
+      "conexao": {
+        "total_conexoes": 3,
+        "total_desconexoes": 0,
+        "desconexoes_inesperadas": 0,
+        "tempo_max_recuperacao_s": null
+      }
     },
     {
       "sensor_id": "sensor_temp_02",
       "tipo": "temperatura",
       "topico": "fabrica/maquina02/temperatura",
-      "total_leituras": 31,
-      "envios_ok": 31,
+      "total_leituras": 124,
+      "envios_ok": 124,
       "envios_falha": 0,
-      "alertas_disparados": 7,
-      "latencia_media_ms": 0.75,
-      "latencia_maxima_ms": 1.1
+      "leituras_sem_conexao": 0,
+      "alertas_disparados": 27,
+      "latencia_media_ms": 0.88,
+      "latencia_maxima_ms": 3.52,
+      "conexao": {
+        "total_conexoes": 3,
+        "total_desconexoes": 0,
+        "desconexoes_inesperadas": 0,
+        "tempo_max_recuperacao_s": null
+      }
     },
     {
       "sensor_id": "sensor_vib_03",
       "tipo": "vibracao",
       "topico": "fabrica/maquina03/vibracao",
-      "total_leituras": 31,
-      "envios_ok": 31,
+      "total_leituras": 123,
+      "envios_ok": 123,
       "envios_falha": 0,
+      "leituras_sem_conexao": 0,
       "alertas_disparados": 0,
-      "latencia_media_ms": 0.75,
-      "latencia_maxima_ms": 1.15
+      "latencia_media_ms": 0.99,
+      "latencia_maxima_ms": 15.18,
+      "conexao": {
+        "total_conexoes": 3,
+        "total_desconexoes": 0,
+        "desconexoes_inesperadas": 0,
+        "tempo_max_recuperacao_s": null
+      }
     },
     {
       "sensor_id": "sensor_press_04",
       "tipo": "pressao",
       "topico": "fabrica/maquina04/pressao",
-      "total_leituras": 31,
-      "envios_ok": 31,
+      "total_leituras": 121,
+      "envios_ok": 121,
       "envios_falha": 0,
+      "leituras_sem_conexao": 0,
       "alertas_disparados": 0,
-      "latencia_media_ms": 0.78,
-      "latencia_maxima_ms": 1.16
+      "latencia_media_ms": 0.9,
+      "latencia_maxima_ms": 4.22,
+      "conexao": {
+        "total_conexoes": 3,
+        "total_desconexoes": 0,
+        "desconexoes_inesperadas": 0,
+        "tempo_max_recuperacao_s": null
+      }
     }
   ]
 }
