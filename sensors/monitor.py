@@ -10,9 +10,9 @@ import paho.mqtt.client as mqtt
 BROKER_HOST = "localhost"
 BROKER_PORT = 1883
 
-TOPICO = "fabrica/+/temperatura"
+TOPICO = "fabrica/+/#"
 
-LIMITE_ALERTA_C = 80.0
+LIMIARES = { "temperatura": 80.0, "vibracao": 18.0, "pressao": 150.0, }
 
 PASTA_RESULTADOS = os.path.join("resultados", "monitor")
 ARQUIVO_LEITURAS = os.path.join(PASTA_RESULTADOS, "leituras_monitor.csv")
@@ -26,24 +26,24 @@ def garantir_arquivos_csv():
     if not os.path.exists(ARQUIVO_LEITURAS):
         with open(ARQUIVO_LEITURAS, mode="w", newline="", encoding="utf-8") as f:
             writer = csv.writer(f)
-            writer.writerow(["timestamp_recebido", "sensor_id", "valor", "unidade", "topico"])
+            writer.writerow(["timestamp_recebido", "sensor_id", "tipo", "valor", "unidade", "topico"])
 
     if not os.path.exists(ARQUIVO_ALERTAS):
         with open(ARQUIVO_ALERTAS, mode="w", newline="", encoding="utf-8") as f:
             writer = csv.writer(f)
-            writer.writerow(["timestamp_recebido", "sensor_id", "valor", "limite", "topico"])
+            writer.writerow(["timestamp_recebido", "sensor_id", "tipo", "valor", "limite", "topico"])
 
 
-def registrar_leitura(sensor_id, valor, unidade, topico):
+def registrar_leitura(sensor_id, tipo, valor, unidade, topico):
     with open(ARQUIVO_LEITURAS, mode="a", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
-        writer.writerow([datetime.now().isoformat(timespec="seconds"), sensor_id, valor, unidade, topico])
+        writer.writerow([datetime.now().isoformat(timespec="seconds"), sensor_id, tipo, valor, unidade, topico])
 
 
-def registrar_alerta(sensor_id, valor, topico):
+def registrar_alerta(sensor_id, tipo, valor, limite, topico):
     with open(ARQUIVO_ALERTAS, mode="a", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
-        writer.writerow([datetime.now().isoformat(timespec="seconds"), sensor_id, valor, LIMITE_ALERTA_C, topico])
+        writer.writerow([datetime.now().isoformat(timespec="seconds"), sensor_id, tipo, valor, limite, topico])
 
 def on_connect(client, userdata, flags, reason_code, properties=None):
     if reason_code == 0:
@@ -62,6 +62,7 @@ def on_message(client, userdata, msg):
         return
 
     sensor_id = payload.get("sensor_id", "desconhecido")
+    tipo = payload.get("tipo", "desconhecido")
     valor = payload.get("valor")
     unidade = payload.get("unidade", "")
 
@@ -69,13 +70,13 @@ def on_message(client, userdata, msg):
         print(f"[AVISO] Payload sem campo 'valor': {payload}")
         return
 
-    registrar_leitura(sensor_id, valor, unidade, msg.topic)
-    print(f"[LEITURA] {sensor_id} | {valor}{unidade} | tópico: {msg.topic}")
+    registrar_leitura(sensor_id, tipo, valor, unidade, msg.topic)
+    print(f"[LEITURA] {sensor_id} ({tipo}) | {valor}{unidade} | tópico: {msg.topic}")
 
-    if valor > LIMITE_ALERTA_C:
-        registrar_alerta(sensor_id, valor, msg.topic)
-        print(f"[ALERTA] Temperatura acima do limite! {sensor_id} = {valor}°C (limite: {LIMITE_ALERTA_C}°C)")
-
+    limite = LIMIARES.get(tipo)
+    if limite is not None and valor > limite:
+        registrar_alerta(sensor_id, tipo, valor, limite, msg.topic)
+        print(f"[ALERTA] {tipo} acima do limite! {sensor_id} = {valor}{unidade} (limite: {limite})")
 
 def on_disconnect(client, userdata, flags, reason_code, properties=None):
     print("[INFO] Desconectado do broker.")
