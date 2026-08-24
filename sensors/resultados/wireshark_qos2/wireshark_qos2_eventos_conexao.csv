@@ -1,0 +1,3 @@
+timestamp,sensor_id,evento,reason_code,detalhe
+2026-08-24 18:30:53,wireshark_qos2,connect,Success,
+2026-08-24 18:33:13,wireshark_qos2,connect,Success,
