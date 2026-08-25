@@ -48,6 +48,13 @@ def parse_argumentos():
                          help="Quantidade de sensores por tipo (quando não especificado individualmente em --tipos)")
     parser.add_argument("--broker", default="localhost")
     parser.add_argument("--porta", type=int, default=1883)
+
+    parser.add_argument("--tls", action="store_true",
+                        help="Usa TLS para conexão com o broker")
+
+    parser.add_argument("--ca-cert",
+                        help="Caminho para o certificado da CA usado pelo TLS")
+
     parser.add_argument("--qos", type=int, choices=[0, 1, 2], default=1)
     parser.add_argument("--intervalo", type=float, default=2.0)
     parser.add_argument("--periodo-ciclo", type=float, default=40.0,
@@ -279,6 +286,11 @@ def gerar_resumo(pasta_saida, cenario, sensores_info, args):
 
 def main():
     args = parse_argumentos()
+
+    if args.tls and not args.ca_cert:
+        print("ERRO: --tls exige --ca-cert.")
+        sys.exit(1)
+
     plano = parse_tipos(args.tipos, args.n_sensores)
 
     total_sensores = sum(quantidade for _, quantidade in plano)
@@ -316,6 +328,13 @@ def main():
             ]
 
             valor_base_forcado = getattr(args, config["attr_base"])
+
+            if args.tls:
+                comando += [
+                    "--tls",
+                    "--ca-cert", args.ca_cert
+                ]
+
             if valor_base_forcado is not None:
                 comando += [config["arg_base"], str(valor_base_forcado)]
 

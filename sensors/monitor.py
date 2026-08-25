@@ -2,6 +2,7 @@
 import json
 import csv
 import os
+import argparse
 from datetime import datetime
 
 import paho.mqtt.client as mqtt
@@ -9,6 +10,8 @@ import paho.mqtt.client as mqtt
 
 BROKER_HOST = "localhost"
 BROKER_PORT = 1883
+TLS_ENABLED = False
+CA_CERT = None
 
 TOPICO = "fabrica/+/#"
 
@@ -81,15 +84,42 @@ def on_message(client, userdata, msg):
 def on_disconnect(client, userdata, flags, reason_code, properties=None):
     print("[INFO] Desconectado do broker.")
 
+def parse_argumentos():
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument("--broker", default="localhost")
+    parser.add_argument("--porta", type=int, default=1883)
+
+    parser.add_argument("--tls", action="store_true",
+                        help="Usa TLS para conexão com o broker")
+
+    parser.add_argument("--ca-cert",
+                        help="Caminho para o certificado da CA usado pelo TLS")
+
+    return parser.parse_args()
 
 def main():
+    global BROKER_HOST, BROKER_PORT
+
+    args = parse_argumentos()
+
+    if args.tls and not args.ca_cert:
+        print("ERRO: --tls exige --ca-cert.")
+        return
+
+    BROKER_HOST = args.broker
+    BROKER_PORT = args.porta
+
     garantir_arquivos_csv()
 
     client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
-
     client.on_connect = on_connect
     client.on_message = on_message
     client.on_disconnect = on_disconnect
+
+    if args.tls:
+        client.tls_set(ca_certs=args.ca_cert)
+        print(f"[OK] TLS habilitado usando CA: {args.ca_cert}")
 
     print(f"Conectando em {BROKER_HOST}:{BROKER_PORT}...")
     client.connect(BROKER_HOST, BROKER_PORT, keepalive=60)

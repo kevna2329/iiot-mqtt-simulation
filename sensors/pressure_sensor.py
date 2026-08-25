@@ -15,6 +15,10 @@ def parse_argumentos():
     parser.add_argument("sensor_id", nargs="?", default="sensor_press_01")
     parser.add_argument("--broker", default="localhost")
     parser.add_argument("--porta", type=int, default=1883)
+    parser.add_argument("--tls", action="store_true",
+                        help="Usa TLS para conexão com o broker")
+    parser.add_argument("--ca-cert",
+                        help="Caminho para o certificado da CA usado pelo TLS")
     parser.add_argument("--topico", default="fabrica/maquina01/pressao")
     parser.add_argument("--qos", type=int, choices=[0, 1, 2], default=1)
     parser.add_argument("--intervalo", type=float, default=2.0)
@@ -157,6 +161,14 @@ def main():
     client.will_set(TOPICO_STATUS, payload="offline", qos=1, retain=True)
 
     inicializar_csv_eventos()
+
+    if ARGS.tls:
+        if not ARGS.ca_cert:
+            print(f"[{SENSOR_ID}] ERRO: --tls exige --ca-cert.")
+            sys.exit(1)
+
+        client.tls_set(ca_certs=ARGS.ca_cert)
+        print(f"[{SENSOR_ID}] TLS habilitado usando CA: {ARGS.ca_cert}")
 
     print(f"[{SENSOR_ID}] Conectando ao broker {BROKER_ENDERECO}:{BROKER_PORTA}...")
     print(f"[{SENSOR_ID}] Padrão de pressão: base={PRESSAO_BASE}PSI, amplitude={AMPLITUDE}PSI, "

@@ -1,0 +1,5 @@
+timestamp,sensor_id,evento,reason_code,detalhe
+2026-08-25 17:03:28,sensor_temp_01,connect,Success,
+2026-08-25 17:48:23,sensor_temp_01,connect,Success,
+2026-08-25 17:57:11,sensor_temp_01,connect,Success,
+2026-08-25 17:58:41,sensor_temp_01,connect,Success,

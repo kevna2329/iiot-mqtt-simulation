@@ -1,0 +1,84 @@
+{
+  "cenario": "sem_tls",
+  "tipo_cenario": "normal",
+  "parametros": {
+    "broker": "localhost",
+    "porta": 1883,
+    "qos": 1,
+    "intervalo": 2.0,
+    "periodo_ciclo": 40.0,
+    "duracao": 10.0,
+    "temp_base_forcado": null,
+    "freq_base_forcado": null,
+    "pressao_base_forcado": null,
+    "reconexao_min_s": 1.0,
+    "reconexao_max_s": 30.0
+  },
+  "totais": {
+    "sensores": 3,
+    "leituras": 78,
+    "envios_ok": 78,
+    "envios_falha": 0,
+    "leituras_sem_conexao": 0,
+    "alertas_disparados": 7,
+    "desconexoes_inesperadas": 0,
+    "latencia_media_ms": 0.92,
+    "latencia_maxima_ms": 1.98
+  },
+  "sensores": [
+    {
+      "sensor_id": "sensor_temp_01",
+      "tipo": "temperatura",
+      "topico": "fabrica/maquina01/temperatura",
+      "total_leituras": 27,
+      "envios_ok": 27,
+      "envios_falha": 0,
+      "leituras_sem_conexao": 0,
+      "alertas_disparados": 7,
+      "latencia_media_ms": 0.94,
+      "latencia_maxima_ms": 1.98,
+      "conexao": {
+        "total_conexoes": 5,
+        "total_desconexoes": 0,
+        "desconexoes_inesperadas": 0,
+        "tempo_max_recuperacao_s": null
+      }
+    },
+    {
+      "sensor_id": "sensor_vib_02",
+      "tipo": "vibracao",
+      "topico": "fabrica/maquina02/vibracao",
+      "total_leituras": 26,
+      "envios_ok": 26,
+      "envios_falha": 0,
+      "leituras_sem_conexao": 0,
+      "alertas_disparados": 0,
+      "latencia_media_ms": 0.93,
+      "latencia_maxima_ms": 1.55,
+      "conexao": {
+        "total_conexoes": 5,
+        "total_desconexoes": 0,
+        "desconexoes_inesperadas": 0,
+        "tempo_max_recuperacao_s": null
+      }
+    },
+    {
+      "sensor_id": "sensor_press_03",
+      "tipo": "pressao",
+      "topico": "fabrica/maquina03/pressao",
+      "total_leituras": 25,
+      "envios_ok": 25,
+      "envios_falha": 0,
+      "leituras_sem_conexao": 0,
+      "alertas_disparados": 0,
+      "latencia_media_ms": 0.89,
+      "latencia_maxima_ms": 1.55,
+      "conexao": {
+        "total_conexoes": 5,
+        "total_desconexoes": 0,
+        "desconexoes_inesperadas": 0,
+        "tempo_max_recuperacao_s": null
+      }
+    }
+  ]
+}
