@@ -16,7 +16,7 @@ GRUPO_FALHAS = [
     "cenario_assimetrico_vib",
     "cenario_queda_rede",
 ]
-
+GRUPO_SEGURANCA = ["sem_tls", "com_tls"]
 
 def parse_argumentos():
     parser = argparse.ArgumentParser()
@@ -25,9 +25,10 @@ def parse_argumentos():
         help="Lista de nomes de pastas em resultados/ a comparar. Se omitido, usa --grupo."
     )
     parser.add_argument(
-        "--grupo", choices=["carga", "falhas", "todos"], default=None,
+        "--grupo", choices=["carga", "falhas", "seguranca", "todos"], default=None,
         help="Usa um agrupamento pré-definido: 'carga' (normal/estresse/alerta), "
-             "'falhas' (os 3 assimétricos + queda de rede), ou 'todos' (todos os cenários encontrados)."
+             "'falhas' (os 3 assimétricos + queda de rede), 'seguranca' (com_tls vs sem_tls), "
+             "ou 'todos' (todos os cenários encontrados)."
     )
     parser.add_argument("--saida", default=PASTA_GRAFICOS_PADRAO,
                          help="Pasta onde salvar os gráficos comparativos")
@@ -131,10 +132,12 @@ def main():
         lista_cenarios = GRUPO_CARGA
     elif args.grupo == "falhas":
         lista_cenarios = GRUPO_FALHAS
+    elif args.grupo == "seguranca":
+        lista_cenarios = GRUPO_SEGURANCA
     elif args.grupo == "todos":
         lista_cenarios = descobrir_todos_cenarios()
     else:
-        print("ERRO: informe --cenarios <nomes...> ou --grupo {carga,falhas,todos}")
+        print("ERRO: informe --cenarios <nomes...> ou --grupo {carga,falhas,seguranca,todos}")
         raise SystemExit(1)
 
     resumos = [carregar_resumo(c) for c in lista_cenarios]
@@ -174,6 +177,22 @@ def main():
 
     print(f"\nComparação concluída entre: {', '.join(m['cenario'] for m in metricas_lista)}")
     print(f"Gráficos salvos em: {args.saida}")
+
+
+    if args.grupo == "seguranca":
+        por_nome = {m["cenario"]: m for m in metricas_lista}
+        sem = por_nome.get("sem_tls")
+        com = por_nome.get("com_tls")
+        if sem and com:
+            print("\n--- Overhead de criptografia (TLS) ---")
+            if sem["latencia_media_ms"]:
+                overhead_pct = 100 * (com["latencia_media_ms"] - sem["latencia_media_ms"]) / sem["latencia_media_ms"]
+                print(f"Latência média: {sem['latencia_media_ms']}ms (sem TLS) -> "
+                      f"{com['latencia_media_ms']}ms (com TLS)  [{overhead_pct:+.1f}%]")
+            print(f"Taxa de sucesso: {sem['taxa_sucesso_pct']}% (sem TLS) -> "
+                  f"{com['taxa_sucesso_pct']}% (com TLS)")
+
+
 
 
 if __name__ == "__main__":

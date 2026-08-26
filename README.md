@@ -10,6 +10,7 @@ Este projeto consiste na simulação de uma rede industrial (IIoT) utilizando o 
 ### Pré-requisitos
 - Python 3.13+ instalado
 - Broker MQTT (Mosquitto) instalado e em execução
+- OpenSSL
 - Git
 
 ### Passos para execução
@@ -27,9 +28,104 @@ cd sensors
 python temp_sensor.py sensor_temp_01 
 ```
 4. Ou execute múltiplos sensores simultaneamente:
+   Sem tls
 ```bash
-python iniciar_sensor.py --tipos temperatura:2,vibracao:1,pressao:1 --cenario cenario_normal --duracao 60
+cd sensors
+python iniciar_sensor.py --tipos temperatura:1,vibracao:1,pressao:1 --broker localhost --porta 1883 --qos 1 --intervalo 2 --cenario sem_tls --duracao 10
 ```
+  Com tls
+  ```bash
+cd sensors
+python iniciar_sensor.py --tipos temperatura:1,vibracao:1,pressao:1 --broker localhost --porta 8883 --tls --ca-cert "..\certs\ca.crt" --qos 1 --intervalo 2 --cenario com_tls --duracao 10
+```
+
+## 1.1. Comunicação MQTT com e sem TLS
+
+O projeto foi atualizado para permitir a execução dos sensores em dois modos:
+
+* **Sem TLS:** porta `1883`
+* **Com TLS:** porta `8883`
+
+Para o modo com TLS, foram adicionados certificados na pasta `certs/`, utilizando uma CA própria para autenticar o broker.
+
+### Execução sem TLS
+
+Com o Mosquitto configurado e em execução:
+
+```bash
+mosquitto -c mosquitto.conf -v
+```
+
+Execute os sensores normalmente:
+
+```bash
+cd sensors
+python iniciar_sensor.py --tipos temperatura:1,vibracao:1,pressao:1 --broker localhost --porta 1883 --qos 1 --intervalo 2 --cenario sem_tls --duracao 10
+```
+
+Os resultados são armazenados em:
+
+```text
+resultados/sem_tls/
+```
+
+### Execução com TLS
+
+Para utilizar TLS, o certificado da CA deve ser informado:
+
+```bash
+cd sensors
+python iniciar_sensor.py --tipos temperatura:1,vibracao:1,pressao:1 --broker localhost --porta 8883 --tls --ca-cert "..\certs\ca.crt" --qos 1 --intervalo 2 --cenario com_tls --duracao 10
+```
+
+Os resultados são armazenados em:
+
+```text
+resultados/com_tls/
+```
+
+### Certificados
+
+Os certificados utilizados pelo broker ficam em:
+
+```text
+certs/
+├── ca.crt
+├── ca.key
+├── server.crt
+└── server.key
+```
+
+Caso seja necessário gerar novamente os certificados, utilize o script disponível em `certs/`.
+
+### Monitor
+
+O monitor também pode funcionar nos dois modos:
+
+**Sem TLS:**
+
+```bash
+python monitor.py --broker localhost --porta 1883
+```
+
+**Com TLS:**
+
+```bash
+python monitor.py --broker localhost --porta 8883 --tls --ca-cert "..\certs\ca.crt"
+```
+
+### Comparação de segurança
+
+Foi adicionado um grupo específico para comparar os cenários `sem_tls` e `com_tls`:
+
+```bash
+python graphic_cenarios.py --grupo seguranca
+```
+
+Essa comparação permite analisar o impacto do TLS em métricas como **latência e taxa de sucesso**.
+
+Além disso, os sensores passaram a possuir **reconexão automática com backoff** e **Last Will and Testament (LWT)**, permitindo registrar e recuperar automaticamente de desconexões durante os experimentos.
+
 
 ## 2. Padronização do Payload
 

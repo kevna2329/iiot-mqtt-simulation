@@ -247,15 +247,24 @@ def main():
     except KeyboardInterrupt:
         print(f"\n[{SENSOR_ID}] Encerrando sensor...")
     finally:
-        arquivo_csv.close()
-        if _arquivo_eventos:
-            _arquivo_eventos.close()
-        
-        client.publish(TOPICO_STATUS, "offline", qos=1, retain=True)
-        time.sleep(0.3)
-        client.loop_stop()
-        client.disconnect()
+        try:
+            if client.is_connected():
+                client.publish(TOPICO_STATUS, "offline", qos=1, retain=True)
+                time.sleep(0.3)
 
+            client.disconnect()
+            time.sleep(0.2)
+            client.loop_stop()
+
+        except Exception as e:
+            print(f"[{SENSOR_ID}] Erro durante encerramento: {e}")
+
+        finally:
+            if arquivo_csv:
+                arquivo_csv.close()
+
+            if _arquivo_eventos:
+                _arquivo_eventos.close()
 
 if __name__ == "__main__":
     main()
