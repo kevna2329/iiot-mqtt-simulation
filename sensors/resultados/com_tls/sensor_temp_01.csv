@@ -5,3 +5,9 @@ timestamp,sensor_id,tipo,valor,unidade,qos,latencia_ms,status,alerta
 2026-08-26 12:28:12,sensor_temp_01,temperatura,57.95,C,1,0.66,ok,False
 2026-08-26 12:28:14,sensor_temp_01,temperatura,62.47,C,1,0.67,ok,False
 2026-08-26 12:28:16,sensor_temp_01,temperatura,69.6,C,1,1.0,ok,False
+2026-08-26 18:09:38,sensor_temp_01,temperatura,50.72,C,1,2.07,ok,False
+2026-08-26 18:09:40,sensor_temp_01,temperatura,49.46,C,1,1.01,ok,False
+2026-08-26 18:09:43,sensor_temp_01,temperatura,53.07,C,1,1.0,ok,False
+2026-08-26 18:09:45,sensor_temp_01,temperatura,59.14,C,1,0.99,ok,False
+2026-08-26 18:09:47,sensor_temp_01,temperatura,64.14,C,1,0.74,ok,False
+2026-08-26 18:09:49,sensor_temp_01,temperatura,69.15,C,1,1.01,ok,False
