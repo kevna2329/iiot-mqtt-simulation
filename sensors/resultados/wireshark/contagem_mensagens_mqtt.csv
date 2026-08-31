@@ -1,0 +1,11 @@
+﻿captura,tipo_mqtt,quantidade
+captura_qos.pcapng,CONNACK,3
+captura_qos.pcapng,CONNECT,3
+captura_qos.pcapng,DISCONNECT,3
+captura_qos.pcapng,PINGREQ,2
+captura_qos.pcapng,PINGRESP,2
+captura_qos.pcapng,PUBACK,6
+captura_qos.pcapng,PUBCOMP,45
+captura_qos.pcapng,PUBLISH,82
+captura_qos.pcapng,PUBREC,45
+captura_qos.pcapng,PUBREL,45

@@ -253,3 +253,101 @@ O dashboard não simula dados por conta própria, ele apenas relê os arquivos C
 **Histórico de incidentes:** tabela consolidando cada período de desconexão inesperada por sensor, com horário de início, horário de recuperação e duração, a mesma lógica de cálculo de tempo de recuperação usada em `iniciar_sensor.py`, aplicada de forma visual.
 
 **Consistência publisher/subscriber:** quando o módulo de monitoramento (monitor/subscriber, desenvolvido pela Pessoa 2) está em execução e salvando seus dados em `resultados/monitor/`, o painel compara o número de leituras publicadas pelos sensores com o número de leituras efetivamente recebidas pelo monitor, evidenciando eventuais perdas de mensagem ou atrasos na entrega.
+
+## 8. Captura e análise de tráfego com Wireshark
+
+A etapa de análise de rede utiliza o **TShark**, componente de linha de comando
+instalado junto com o Wireshark. Como o broker e os sensores são executados em
+`localhost`, a captura deve ser feita na interface de loopback do Npcap.
+
+### 8.1. Pré-requisitos
+
+- Wireshark com Npcap e TShark;
+- Mosquitto em execução nas portas `1883` e, para TLS, `8883`;
+- dependências Python instaladas com `python -m pip install -r requirements.txt`;
+- certificados da pasta `certs/` e a chave local `certs/server.key` para os testes TLS.
+
+Liste as interfaces disponíveis antes do primeiro teste:
+
+```powershell
+& "C:\Program Files\Wireshark\tshark.exe" -D
+```
+
+Em Windows, o script procura automaticamente a interface `NPF_Loopback`. Se a
+detecção não funcionar, informe o número exibido pelo comando anterior usando
+`--interface`.
+
+### 8.2. Captura automatizada
+
+A captura de um cenário é executada a partir da pasta `sensors/`:
+
+```powershell
+python capturar_wireshark.py --cenario cenario_normal
+```
+
+Os cenários aceitos são:
+
+```text
+cenario_normal, cenario_estresse, cenario_alerta,
+cenario_assimetrico_temp, cenario_assimetrico_press,
+cenario_assimetrico_vib, cenario_queda_rede,
+qos0, qos1, qos2, sem_tls e com_tls
+```
+
+Para executar a matriz completa:
+
+```powershell
+python capturar_wireshark.py --cenario todos
+```
+
+Se o Mosquitto não estiver configurado como serviço, informe o executável. O
+script inicia uma instância isolada e também consegue interrompê-la/reiniciá-la
+durante o cenário de queda geral:
+
+```powershell
+python capturar_wireshark.py --cenario todos `
+  --broker-exe "C:\Program Files\mosquitto\mosquitto.exe"
+```
+
+Os cenários assimétricos utilizam automaticamente `tcp_proxy.py`, interrompendo
+somente o link do sensor avaliado e preservando os demais. Por segurança, uma
+captura existente não é sobrescrita; use `--sobrescrever` quando quiser repetir
+deliberadamente o experimento.
+
+As capturas são armazenadas em:
+
+```text
+sensors/resultados/wireshark/<cenario>.pcapng
+```
+
+### 8.3. Extração de métricas e gráficos
+
+Depois das capturas, execute:
+
+```powershell
+python analisar_capturas.py
+```
+
+O analisador aplica um filtro às portas `1883`, `8883` e `1885` e produz:
+
+- `metricas_capturas.csv`: pacotes, bytes, duração, pacotes/s, fluxos TCP,
+  retransmissões e volumes MQTT/TLS;
+- `contagem_mensagens_mqtt.csv`: quantidade de CONNECT, PUBLISH, PUBACK,
+  PUBREC, PUBREL, PUBCOMP e demais mensagens;
+- `mensagens_mqtt.csv`: inventário auditável das mensagens MQTT, com frame,
+  instante, QoS, tópico e Message ID;
+- gráficos em `graphs/wireshark/` sobre volume de tráfego, mensagens MQTT,
+  níveis de QoS, conexões/retransmissões e TLS.
+
+No tráfego sem TLS, tópicos e payloads MQTT podem ser inspecionados diretamente.
+Na porta `8883`, o conteúdo da aplicação aparece como dados TLS cifrados; essa
+ausência de tópico/payload legível constitui a evidência de confidencialidade do
+cenário protegido.
+
+### 8.4. Reprodutibilidade
+
+Ao comparar dois cenários, mantenha duração, quantidade de sensores, intervalo
+e QoS constantes, alterando apenas a variável estudada. Não limpe a mesma pasta
+entre repetições: use nomes distintos (`sem_tls_rep1`, `sem_tls_rep2`, etc.) ou
+preserve um CSV consolidado, para que os números apresentados no relatório
+possam ser auditados posteriormente.
