@@ -3,6 +3,8 @@ __pycache__/
 *.pyc
 .vscode/
 *.log
+.tools/
+.capture_test/
 
 certs/*.key
 certs/*.csr

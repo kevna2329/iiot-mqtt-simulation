@@ -1,0 +1,2 @@
+﻿captura,pacotes,bytes,duracao_s,pacotes_por_s,fluxos_tcp,retransmissoes_tcp,quadros_mqtt,quadros_tls,bytes_registros_tls
+captura_qos.pcapng,510,45564,606.519868,0.841,4,0,236,9,234
